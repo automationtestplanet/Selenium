@@ -10,93 +10,144 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class OpenMrsTest {
+    static WebDriver driver;
 
-    public static void main(String[] args) {
-
-        // Find Patient
-        // Active Visits and Add Attachments
-        // Delete Patient
-
+    static void launchOpenMrsApplication(String url) {
         System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/src/main/resources/Drivers/chrome/chromedriver129v.exe");
-        WebDriver driver = new ChromeDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.get("https://demo.openmrs.org/openmrs/login.htm");
-//        driver.navigate().to("https://demo.openmrs.org/openmrs/login.htm");
-//        driver.navigate().back();
+        driver.get(url);
+    }
 
-//        System.out.println(driver.getTitle());
-//        System.out.println(driver.getCurrentUrl());
-//        System.out.println(driver.getPageSource());
+    static void loginToOpenMrs(String userName, String password, String moduleName) {
+        driver.findElement(By.id("username")).sendKeys(userName);
+        driver.findElement(By.name("password")).sendKeys(password);
+        driver.findElement(By.id(moduleName)).click();
+        driver.findElement(By.cssSelector("input[value='Log In']")).click();
+    }
 
-        if (driver.getTitle().trim().equalsIgnoreCase("Login")) {
-            driver.findElement(By.id("username")).sendKeys("Admin");
-            driver.findElement(By.name("password")).sendKeys("Admin123");
-            driver.findElement(By.id("Registration Desk")).click();
-            driver.findElement(By.cssSelector("input[value='Log In']")).click();
+    static boolean verifyPageTitle(String title) {
+        return driver.getTitle().trim().equalsIgnoreCase(title);
+    }
 
-            if (driver.findElement(By.partialLinkText("Logout")).isDisplayed() && driver.getTitle().trim().equalsIgnoreCase("Home")) {
+    static boolean verifyTileTile(String tileName){
+        return driver.findElement(By.partialLinkText(tileName)).isDisplayed();
+    }
+
+    static void clickTile(String tileName){
+        driver.findElement(By.partialLinkText(tileName)).click();
+    }
+
+    static boolean verifyPageName(String pageName){
+        return driver.findElement(By.xpath("//h2[contains(text(),'"+pageName+"')]")).isDisplayed();
+    }
+
+    static void enterName(String name) {
+        String[] nameArr = name.split(",");
+        driver.findElement(By.name("givenName")).sendKeys(nameArr[0].trim());
+        driver.findElement(By.name("familyName")).sendKeys(nameArr[1].trim());
+    }
+
+    static void selectGender(String gender) {
+        Select genderDropdown = new Select(driver.findElement(By.id("gender-field")));
+        genderDropdown.selectByVisibleText(gender);
+    }
+
+    static void enterDateOfBirth(String dateOfBirth) {
+        String[] dateOfBirthArr = dateOfBirth.split(",");
+        driver.findElement(By.id("birthdateDay-field")).sendKeys(dateOfBirthArr[0].trim());
+        Select birthMonthDropdown = new Select(driver.findElement(By.id("birthdateMonth-field")));
+        birthMonthDropdown.selectByVisibleText(dateOfBirthArr[1].trim());
+        driver.findElement(By.id("birthdateYear-field")).sendKeys(dateOfBirthArr[2].trim());
+    }
+
+    static void enterAddress(String address) {
+        String[] addressArr = address.split(",");
+        driver.findElement(By.id("address1")).sendKeys(addressArr[0].trim());
+        driver.findElement(By.id("cityVillage")).sendKeys(addressArr[1].trim());
+        driver.findElement(By.id("stateProvince")).sendKeys(addressArr[2].trim());
+        driver.findElement(By.id("country")).sendKeys(addressArr[3].trim());
+        driver.findElement(By.id("postalCode")).sendKeys(addressArr[4].trim());
+    }
+
+    static void enterPhoneNumber(String phoneNumber) {
+        driver.findElement(By.name("phoneNumber")).sendKeys(phoneNumber);
+    }
+
+    static void clickNext() {
+        driver.findElement(By.id("next-button")).click();
+    }
+
+    static boolean verifyDetailsToConfirm(String name, String gender, String birthDate, String phoneNumber) {
+        String actualName = driver.findElement(By.xpath("//span[text()='Name: ']//parent::p")).getText().trim();
+        String actualGender = driver.findElement(By.xpath("//span[text()='Gender: ']//parent::p")).getText().trim();
+        String actualBirthDate = driver.findElement(By.xpath("//span[text()='Birthdate: ']//parent::p")).getText().trim();
+        String actualPhoneNumber = driver.findElement(By.xpath("//span[text()='Phone Number: ']//parent::p")).getText().trim();
+
+        return actualName.contains(name) && actualGender.contains(gender) && actualBirthDate.contains(birthDate) && actualPhoneNumber.contains(phoneNumber);
+    }
+
+    static void clickConfirm() {
+        driver.findElement(By.cssSelector("input[value='Confirm']")).click();
+    }
+
+    static void clickCancel() {
+        driver.findElement(By.id("cancelSubmission")).click();
+    }
+
+    static boolean verifyPatientNameInPatientDetailsPage(String name) {
+        String[] nameArr = name.split(",");
+        String givenName = driver.findElement(By.className("PersonName-givenName")).getText().trim();
+        String familyName = driver.findElement(By.className("PersonName-familyName")).getText().trim();
+        return givenName.equalsIgnoreCase(nameArr[0].trim()) && familyName.equalsIgnoreCase(nameArr[1].trim());
+    }
+
+    static String getPatientId(){
+        return driver.findElement(By.xpath("//em[text()='Patient ID']//following-sibling::span")).getText().trim();
+    }
+
+    static WebElement logoutElement(){
+        return driver.findElement(By.partialLinkText("Logout"));
+    }
+
+    static boolean verifyElementDisplayed(WebElement element){
+        return element.isDisplayed();
+    }
+
+    public static void main(String[] args) {
+        launchOpenMrsApplication("https://demo.openmrs.org/openmrs/login.htm");
+        if (verifyPageTitle("Login")) {
+            loginToOpenMrs("Admin", "Admin123", "Registration Desk");
+            if (verifyElementDisplayed(logoutElement()) && verifyPageTitle("Home")) {
                 System.out.println("Login Successful");
                 // Register a Patient
-
-                if (driver.findElement(By.partialLinkText("Register a patient")).isDisplayed()) {
-                    driver.findElement(By.partialLinkText("Register a patient")).click();
-
-                    if (driver.findElement(By.xpath("//h2[contains(text(),'Register a patient')]")).isDisplayed()) {
-                        driver.findElement(By.name("givenName")).sendKeys("ATP");
-                        driver.findElement(By.name("familyName")).sendKeys("Test1");
-                        driver.findElement(By.id("next-button")).click();
-
-                        Select genderDropdown = new Select(driver.findElement(By.id("gender-field")));
-                        genderDropdown.selectByIndex(0);
-                        genderDropdown.selectByValue("M");
-                        genderDropdown.selectByVisibleText("Male");
-
-                        List<WebElement> allOptions = genderDropdown.getOptions();
-                        System.out.println(allOptions.size());
-                        System.out.println(genderDropdown.getFirstSelectedOption().getAttribute("value"));
-                        System.out.println(genderDropdown.getFirstSelectedOption().getText());
-                        driver.findElement(By.id("next-button")).click();
-
-                        driver.findElement(By.id("birthdateDay-field")).sendKeys("01");
-                        Select birthMonthDropdown = new Select(driver.findElement(By.id("birthdateMonth-field")));
-                        birthMonthDropdown.selectByVisibleText("January");
-                        driver.findElement(By.id("birthdateYear-field")).sendKeys("1990");
-                        driver.findElement(By.id("next-button")).click();
-
-                        driver.findElement(By.id("address1")).sendKeys("S R Nagar");
-                        driver.findElement(By.id("cityVillage")).sendKeys("Hyderabad");
-                        driver.findElement(By.id("stateProvince")).sendKeys("Telangana");
-                        driver.findElement(By.id("country")).sendKeys("India");
-                        driver.findElement(By.id("postalCode")).sendKeys("500038");
-                        driver.findElement(By.id("next-button")).click();
-
-                        driver.findElement(By.name("phoneNumber")).sendKeys("9876543210");
-                        driver.findElement(By.id("next-button")).click();
-                        driver.findElement(By.id("next-button")).click();
-
-                        String name = driver.findElement(By.xpath("//span[text()='Name: ']//parent::p")).getText().trim();
-                        String gender = driver.findElement(By.xpath("//span[text()='Gender: ']//parent::p")).getText().trim();
-                        String birthDate = driver.findElement(By.xpath("//span[text()='Birthdate: ']//parent::p")).getText().trim();
-                        String phoneNumber = driver.findElement(By.xpath("//span[text()='Phone Number: ']//parent::p")).getText().trim();
-
-                        if (name.contains("ATP, Test1") && gender.contains("Male") && birthDate.contains("01, January, 1990") && phoneNumber.contains("9876543210")) {
+                if (verifyTileTile("Register a patient")) {
+                    clickTile("Register a patient");
+                    if (verifyPageName("Register a patient")) {
+                        enterName("ATP, Test1");
+                        clickNext();
+                        selectGender("Male");
+                        clickNext();
+                        enterDateOfBirth("01, January, 1990");
+                        clickNext();
+                        enterAddress("SRNagar, Hyderabad, Telangana, India, 500038");
+                        clickNext();
+                        enterPhoneNumber("9876543211");
+                        clickNext();
+                        clickNext();
+                        if (verifyDetailsToConfirm("ATP, Test1", "Male", "01, January, 1990", "9876543211")) {
                             System.out.println("Details are properly displaying, clicking on confirm");
-                            driver.findElement(By.cssSelector("input[value='Confirm']")).click();
-
-                            String givenName = driver.findElement(By.className("PersonName-givenName")).getText().trim();
-                            String familyName = driver.findElement(By.className("PersonName-familyName")).getText().trim();
-
-                            if (givenName.equalsIgnoreCase("ATP") && familyName.equalsIgnoreCase("Test1")) {
+                            clickConfirm();
+                            if (verifyPatientNameInPatientDetailsPage("ATP, Test1")) {
                                 System.out.println("Patient Name is displaying correctly in Patient details page");
-                                String patientId = driver.findElement(By.xpath("//em[text()='Patient ID']//following-sibling::span")).getText().trim();
-                                System.out.println(patientId);
+                                System.out.println(getPatientId());
                             } else {
                                 System.out.println("Patient Name is not displaying correctly in Patient details page");
                             }
                         } else {
                             System.out.println("Details are showing incorrect, clicking on Cancel");
-                            driver.findElement(By.id("cancelSubmission")).click();
+                            clickCancel();
                         }
                     } else {
                         System.out.println("Register patient page is not displayed");
