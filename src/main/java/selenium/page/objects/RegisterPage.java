@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Select;
 
-public class RegisterPage extends BaseClass{
+public class RegisterPage extends BaseClass {
 
     public RegisterPage(WebDriver driver) {
         super(driver);
@@ -61,5 +61,19 @@ public class RegisterPage extends BaseClass{
 
     public void clickCancel() {
         driver.findElement(By.id("cancelSubmission")).click();
+    }
+
+    public void enterRegistrationDetails(String name, String gender, String dateOfBirth, String address, String phoneNumbers) {
+        enterName(name);
+        clickNext();
+        selectGender(gender);
+        clickNext();
+        enterDateOfBirth(dateOfBirth);
+        clickNext();
+        enterAddress(address);
+        clickNext();
+        enterPhoneNumber(phoneNumbers);
+        clickNext();
+        clickNext();
     }
 }

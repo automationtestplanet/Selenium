@@ -10,21 +10,19 @@ import org.openqa.selenium.support.FindBy;
 
 import java.util.concurrent.TimeUnit;
 
+@Getter
 public class LoginPage extends BaseClass {
 
     public LoginPage(WebDriver driver) {
         super(driver);
     }
 
-    @Getter
     @FindBy(id = "username")
     private WebElement userNameElement;
 
-    @Getter
     @FindBy(name="password")
     private WebElement passwordElement;
 
-    @Getter
     @FindBy(css="input[value='Log In']")
     private WebElement loginButtonElement;
 
