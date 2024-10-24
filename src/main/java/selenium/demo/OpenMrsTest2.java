@@ -40,6 +40,39 @@ public class OpenMrsTest2 {
                                     findPatientPage.clickFindPatientTableFirstRecord();
                                     if (detailsPage.verifyPatientNameInPatientDetailsPage("ATP, Test1")) {
                                         System.out.println("Find Patient is working as expected");
+
+                                        //Start Visits and Add Attachments
+                                        detailsPage.clickStartVisit();
+                                        if (detailsPage.verifyVisitsTab()) {
+                                            System.out.println("Start Visits available");
+                                            detailsPage.clickAttachments();
+                                            String filePath = System.getProperty("user.dir") + "/src/main/resources/Files/UploadFile.pdf";
+                                            detailsPage.uploadFile(filePath, "Test1");
+                                            if (detailsPage.verifyFileUpload("Test1")) {
+                                                System.out.println("File Upload Successful");
+
+                                                // Delete Patient
+                                                detailsPage.clickHomeIcon();
+                                                homePage.clickTile("Find Patient Record");
+                                                findPatientPage.verifyPageName("Find Patient Record");
+                                                findPatientPage.enterValueInPatientSearch("ATP Test1");
+                                                findPatientPage.clickFindPatientTableFirstRecord();
+                                                detailsPage.clickDeletePatient();
+                                                detailsPage.enterDeleteReason("Other");
+                                                detailsPage.clickDeletePatientConfirmButton();
+                                                findPatientPage.enterValueInPatientSearch("ATP Test1");
+                                                if(findPatientPage.verifyNoMatchRecordsFoundMessage()){
+                                                    System.out.println("Patient record is deleted");
+                                                }else{
+                                                    System.out.println("Patient record is not deleted");
+                                                }
+                                            } else {
+                                                System.out.println("File Upload failed");
+                                            }
+                                        } else {
+                                            System.out.println("Start Visits not available");
+                                        }
+
                                     } else {
                                         System.out.println("Find Patient is not working as expected");
                                     }

@@ -25,6 +25,9 @@ public class FindPatientPage extends BaseClass {
     @FindBy(xpath = "//table[@ID='patient-search-results-table']/tbody/tr[1]")
     private WebElement findPatientTableFirstRecord;
 
+    @FindBy(xpath = "//td[text()='No matching records found']")
+    private WebElement noMatchRecordsFoundElement;
+
     public void enterValueInPatientSearch(String value) {
         getFindPatientSearchElement().sendKeys(value);
     }
@@ -43,7 +46,11 @@ public class FindPatientPage extends BaseClass {
         return driver.findElement(By.xpath("//table[@ID='patient-search-results-table']/tbody/tr/td[" + getFindPatientTableColumnIndex(columnName) + "]")).getText().trim();
     }
 
-    public void clickFindPatientTableFirstRecord(){
+    public void clickFindPatientTableFirstRecord() {
         getFindPatientTableFirstRecord().click();
+    }
+
+    public boolean verifyNoMatchRecordsFoundMessage() {
+        return getNoMatchRecordsFoundElement().isDisplayed();
     }
 }
