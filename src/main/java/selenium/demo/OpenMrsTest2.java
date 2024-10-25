@@ -42,6 +42,11 @@ public class OpenMrsTest2 {
                                         System.out.println("Find Patient is working as expected");
 
                                         //Start Visits and Add Attachments
+                                        detailsPage.clickHomeIcon();
+                                        homePage.clickTile("Find Patient Record");
+                                        findPatientPage.verifyPageName("Find Patient Record");
+                                        findPatientPage.enterValueInPatientSearch("ATP Test1");
+                                        findPatientPage.clickFindPatientTableFirstRecord();
                                         detailsPage.clickStartVisit();
                                         if (detailsPage.verifyVisitsTab()) {
                                             System.out.println("Start Visits available");
