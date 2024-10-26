@@ -20,10 +20,10 @@ public class LoginPage extends BaseClass {
     @FindBy(id = "username")
     private WebElement userNameElement;
 
-    @FindBy(name="password")
+    @FindBy(name = "password")
     private WebElement passwordElement;
 
-    @FindBy(css="input[value='Log In']")
+    @FindBy(css = "input[value='Log In']")
     private WebElement loginButtonElement;
 
     public void launchOpenMrsApplication(String url) {
@@ -32,19 +32,23 @@ public class LoginPage extends BaseClass {
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
     }
 
-    public void setUserName(String userName){
+    public void setUserName(String userName) {
         getUserNameElement().sendKeys(userName);
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         getPasswordElement().sendKeys(password);
     }
 
-    public void clickModule(String moduleName){
-        driver.findElement(By.id(moduleName)).click();
+    public WebElement getModuleElement(String moduleName) {
+        return driver.findElement(By.id(moduleName));
     }
 
-    public void clickLoginButton(){
+    public void clickModule(String moduleName) {
+        getModuleElement(moduleName).click();
+    }
+
+    public void clickLoginButton() {
         getLoginButtonElement().click();
     }
 

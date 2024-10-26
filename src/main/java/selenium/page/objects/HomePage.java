@@ -16,6 +16,9 @@ public class HomePage extends BaseClass {
     @FindBy(partialLinkText = "Logout")
     private WebElement logoutElement;
 
+    @FindBy(xpath = "//button[@class='navbar-toggler']")
+    private WebElement logoutMenuButton;
+
     public boolean verifyTileTile(String tileName) {
         return driver.findElement(By.partialLinkText(tileName)).isDisplayed();
     }
@@ -26,5 +29,15 @@ public class HomePage extends BaseClass {
 
     public WebElement logoutElement() {
         return getLogoutElement();
+    }
+
+    public void clickLogout(){
+        getLogoutElement().click();
+    }
+
+    public void clickLogoutMenuButton(){
+        if(!getLogoutMenuButton().getAttribute("aria-expanded").equalsIgnoreCase("true")){
+            getLogoutMenuButton().click();
+        }
     }
 }
