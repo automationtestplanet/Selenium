@@ -2,9 +2,11 @@ package selenium.demo;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import selenium.page.objects.HomePage;
 import selenium.page.objects.LoginPage;
 
+import javax.swing.*;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +23,9 @@ public class WelcomePageTest {
         HomePage homePage = new HomePage(driver);
 
         driver.get(System.getProperty("user.dir") + "/src/main/resources/HTML_Pages/Welcome.html");
+
+
+
 
         /*
 
@@ -39,15 +44,30 @@ public class WelcomePageTest {
         */
 
 
+        JavascriptExecutor je = (JavascriptExecutor) driver; // down-casting
+
+        // Actions lass, if we wnat perform mouse and keyboard actions, we can use Actions class
+
+        WebElement chooseFileElement = driver.findElement(By.cssSelector("input[type='file']"));
+        je.executeScript("arguments[0].scrollIntoView(true)", chooseFileElement);
+//        chooseFileElement.click();
+//        je.executeScript("arguments[0].click()", chooseFileElement);
+
+        Actions actions = new Actions(driver);
+        actions.moveToElement(chooseFileElement).click(chooseFileElement).build().perform();
+//        actions.moveToElement(chooseFileElement).doubleClick(chooseFileElement).build().perform();
+//        actions.moveToElement(chooseFileElement).contextClick(chooseFileElement).build().perform();
+//        actions.moveToElement(chooseFileElement).dragAndDrop(chooseFileElement,chooseFileElement).build().perform();
+//        actions.moveToElement(chooseFileElement).sendKeys(Keys.CONTROL+"A").build().perform();
+
+
         //Same window
 //        driver.findElement(By.linkText("OpenMRS in Same Window")).click();
 //        loginPage.loginToOpenMrs("Admin", "Admin123", "Registration Desk");
 //        homePage.clickLogout();
 
-        JavascriptExecutor je = (JavascriptExecutor) driver; // down-casting
-
 //        je.executeScript("window.scroll(0,document.body.scrollHeight)");
-
+/*
         String mainWindowId = driver.getWindowHandle();
         System.out.println(mainWindowId);
 
@@ -112,7 +132,7 @@ public class WelcomePageTest {
 
 
 
-
+*/
 
 
 
